@@ -364,7 +364,7 @@
 
     .fids-row {
       display: grid;
-      grid-template-columns: 80px 120px 1fr 120px 90px 90px 100px;
+      grid-template-columns: 80px 150px 1fr 120px 90px 90px 100px;
       padding: 14px 24px;
       border-bottom: 1px solid rgba(255,255,255,0.04);
       align-items: center;
@@ -828,32 +828,32 @@
     // Flight data — 24 flights, 3 pages of 8
     var flights = [
       // Page 1
-      { flight: 'CX 251', airline: 'Cathay Pacific', dest: 'Tokyo Narita', destZh: '東京成田', transit: 'Direct', dep: '08:45', arr: '13:30', status: 'boarding', statusText: 'Boarding' },
-      { flight: 'HX 368', airline: 'Hong Kong Airlines', dest: 'Bangkok', destZh: '曼谷', transit: 'Direct', dep: '09:10', arr: '12:25', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 880', airline: 'Cathay Pacific', dest: 'San Francisco', destZh: '三藩市', transit: 'Direct', dep: '09:35', arr: '09:50+1', status: 'ontime', statusText: 'On Time' },
-      { flight: 'KA 802', airline: 'Cathay Dragon', dest: 'Shanghai Pudong', destZh: '上海浦東', transit: 'Direct', dep: '10:05', arr: '12:35', status: 'delayed', statusText: 'Delayed' },
-      { flight: 'CX 715', airline: 'Cathay Pacific', dest: 'London Heathrow', destZh: '倫敦希斯路', transit: 'Direct', dep: '10:25', arr: '16:10', status: 'ontime', statusText: 'On Time' },
-      { flight: 'UO 542', airline: 'HK Express', dest: 'Taipei Taoyuan', destZh: '台北桃園', transit: 'Direct', dep: '10:50', arr: '12:40', status: 'departed', statusText: 'Departed' },
-      { flight: 'CX 133', airline: 'Cathay Pacific', dest: 'Sydney', destZh: '悉尼', transit: 'Direct', dep: '11:15', arr: '22:45', status: 'boarding', statusText: 'Boarding' },
-      { flight: 'SQ 861', airline: 'Singapore Airlines', dest: 'Singapore', destZh: '新加坡', transit: 'Direct', dep: '11:40', arr: '15:30', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 251', airline: 'Cathay Pacific', dest: 'Tokyo Narita', transit: 'Direct', dep: '08:45', arr: '13:30', status: 'boarding', statusText: 'Boarding' },
+      { flight: 'HX 368', airline: 'Hong Kong Airlines', dest: 'Bangkok', transit: 'Direct', dep: '09:10', arr: '12:25', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 880', airline: 'Cathay Pacific', dest: 'San Francisco', transit: 'Direct', dep: '09:35', arr: '09:50+1', status: 'ontime', statusText: 'On Time' },
+      { flight: 'KA 802', airline: 'Cathay Dragon', dest: 'Shanghai Pudong', transit: 'Direct', dep: '10:05', arr: '12:35', status: 'delayed', statusText: 'Delayed' },
+      { flight: 'CX 715', airline: 'Cathay Pacific', dest: 'London Heathrow', transit: 'Direct', dep: '10:25', arr: '16:10', status: 'ontime', statusText: 'On Time' },
+      { flight: 'UO 542', airline: 'HK Express', dest: 'Taipei Taoyuan', transit: 'Direct', dep: '10:50', arr: '12:40', status: 'departed', statusText: 'Departed' },
+      { flight: 'CX 133', airline: 'Cathay Pacific', dest: 'Sydney', transit: 'Direct', dep: '11:15', arr: '22:45', status: 'boarding', statusText: 'Boarding' },
+      { flight: 'SQ 861', airline: 'Singapore Airlines', dest: 'Singapore', transit: 'Direct', dep: '11:40', arr: '15:30', status: 'ontime', statusText: 'On Time' },
       // Page 2
-      { flight: 'CX 451', airline: 'Cathay Pacific', dest: 'Seoul Incheon', destZh: '首爾仁川', transit: 'Direct', dep: '12:00', arr: '16:30', status: 'ontime', statusText: 'On Time' },
-      { flight: 'NH 812', airline: 'ANA', dest: 'Osaka Kansai', destZh: '大阪關西', transit: 'Direct', dep: '12:25', arr: '17:05', status: 'boarding', statusText: 'Boarding' },
-      { flight: 'EK 381', airline: 'Emirates', dest: 'Dubai', destZh: '杜拜', transit: 'Direct', dep: '12:50', arr: '17:20', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 903', airline: 'Cathay Pacific', dest: 'Kuala Lumpur', destZh: '吉隆坡', transit: 'Direct', dep: '13:15', arr: '17:10', status: 'delayed', statusText: 'Delayed' },
-      { flight: 'QF 118', airline: 'Qantas', dest: 'Melbourne', destZh: '墨爾本', transit: 'Via Sydney', dep: '13:40', arr: '01:15+1', status: 'ontime', statusText: 'On Time' },
-      { flight: 'TG 601', airline: 'Thai Airways', dest: 'Phuket', destZh: '布吉', transit: 'Via Bangkok', dep: '14:00', arr: '18:45', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 521', airline: 'Cathay Pacific', dest: 'Ho Chi Minh City', destZh: '胡志明市', transit: 'Direct', dep: '14:30', arr: '16:50', status: 'departed', statusText: 'Departed' },
-      { flight: 'JL 736', airline: 'Japan Airlines', dest: 'Nagoya', destZh: '名古屋', transit: 'Direct', dep: '14:55', arr: '19:40', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 451', airline: 'Cathay Pacific', dest: 'Seoul Incheon', transit: 'Direct', dep: '12:00', arr: '16:30', status: 'ontime', statusText: 'On Time' },
+      { flight: 'NH 812', airline: 'ANA', dest: 'Osaka Kansai', transit: 'Direct', dep: '12:25', arr: '17:05', status: 'boarding', statusText: 'Boarding' },
+      { flight: 'EK 381', airline: 'Emirates', dest: 'Dubai', transit: 'Direct', dep: '12:50', arr: '17:20', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 903', airline: 'Cathay Pacific', dest: 'Kuala Lumpur', transit: 'Direct', dep: '13:15', arr: '17:10', status: 'delayed', statusText: 'Delayed' },
+      { flight: 'QF 118', airline: 'Qantas', dest: 'Melbourne', transit: 'Via Sydney', dep: '13:40', arr: '01:15+1', status: 'ontime', statusText: 'On Time' },
+      { flight: 'TG 601', airline: 'Thai Airways', dest: 'Phuket', transit: 'Via Bangkok', dep: '14:00', arr: '18:45', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 521', airline: 'Cathay Pacific', dest: 'Ho Chi Minh City', transit: 'Direct', dep: '14:30', arr: '16:50', status: 'departed', statusText: 'Departed' },
+      { flight: 'JL 736', airline: 'Japan Airlines', dest: 'Nagoya', transit: 'Direct', dep: '14:55', arr: '19:40', status: 'ontime', statusText: 'On Time' },
       // Page 3
-      { flight: 'BA 028', airline: 'British Airways', dest: 'London Gatwick', destZh: '倫敦蓋特威克', transit: 'Direct', dep: '15:20', arr: '21:05', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 105', airline: 'Cathay Pacific', dest: 'Los Angeles', destZh: '洛杉磯', transit: 'Direct', dep: '15:45', arr: '14:30', status: 'boarding', statusText: 'Boarding' },
-      { flight: 'KE 602', airline: 'Korean Air', dest: 'Busan', destZh: '釜山', transit: 'Via Seoul', dep: '16:10', arr: '21:45', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 653', airline: 'Cathay Pacific', dest: 'Delhi', destZh: '德里', transit: 'Direct', dep: '16:35', arr: '20:15', status: 'delayed', statusText: 'Delayed' },
-      { flight: 'UO 688', airline: 'HK Express', dest: 'Da Nang', destZh: '峴港', transit: 'Direct', dep: '17:00', arr: '19:15', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 257', airline: 'Cathay Pacific', dest: 'Taipei Songshan', destZh: '台北松山', transit: 'Direct', dep: '17:25', arr: '19:15', status: 'ontime', statusText: 'On Time' },
-      { flight: 'SQ 001', airline: 'Singapore Airlines', dest: 'New York JFK', destZh: '紐約', transit: 'Via Singapore', dep: '17:50', arr: '06:20+1', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 401', airline: 'Cathay Pacific', dest: 'Manila', destZh: '馬尼拉', transit: 'Direct', dep: '18:15', arr: '20:30', status: 'boarding', statusText: 'Boarding' }
+      { flight: 'BA 028', airline: 'British Airways', dest: 'London Gatwick', transit: 'Direct', dep: '15:20', arr: '21:05', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 105', airline: 'Cathay Pacific', dest: 'Los Angeles', transit: 'Direct', dep: '15:45', arr: '14:30', status: 'boarding', statusText: 'Boarding' },
+      { flight: 'KE 602', airline: 'Korean Air', dest: 'Busan', transit: 'Via Seoul', dep: '16:10', arr: '21:45', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 653', airline: 'Cathay Pacific', dest: 'Delhi', transit: 'Direct', dep: '16:35', arr: '20:15', status: 'delayed', statusText: 'Delayed' },
+      { flight: 'UO 688', airline: 'HK Express', dest: 'Da Nang', transit: 'Direct', dep: '17:00', arr: '19:15', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 257', airline: 'Cathay Pacific', dest: 'Taipei Songshan', transit: 'Direct', dep: '17:25', arr: '19:15', status: 'ontime', statusText: 'On Time' },
+      { flight: 'SQ 001', airline: 'Singapore Airlines', dest: 'New York JFK', transit: 'Via Singapore', dep: '17:50', arr: '06:20+1', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 401', airline: 'Cathay Pacific', dest: 'Manila', transit: 'Direct', dep: '18:15', arr: '20:30', status: 'boarding', statusText: 'Boarding' }
     ];
 
     var currentPage = 0;
@@ -871,7 +871,7 @@
         html += '<div class="fids-row">' +
           '<span class="fids-flight">' + f.flight + '</span>' +
           '<span class="fids-airline">' + f.airline + '</span>' +
-          '<span class="fids-dest">' + f.dest + ' <span class="fids-dest-zh">' + f.destZh + '</span></span>' +
+          '<span class="fids-dest">' + f.dest + '</span>' +
           '<span class="fids-transit">' + f.transit + '</span>' +
           '<span class="fids-time">' + f.dep + '</span>' +
           '<span class="fids-time">' + f.arr + '</span>' +
