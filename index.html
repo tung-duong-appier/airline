@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hong Kong International Airport — Virtual Terminal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Noto+Sans+HK:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --hkia-teal: #006B6A;
+      --hkia-dark: #004040;
+      --hkia-gold: #C8963E;
+      --hkia-amber: #E8A84C;
+      --hkia-cream: #F5F0E8;
+      --hkia-light: #EAF2F0;
+      --hkia-charcoal: #1A2A2A;
+      --hkia-slate: #2C3E3E;
+      --hkia-sign-bg: #1B1B1B;
+      --hkia-sign-yellow: #FFD036;
+      --hkia-sign-green: #00C853;
+      --hkia-sign-red: #FF3D3D;
+      --hkia-sign-blue: #2196F3;
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --font-cjk: 'Noto Sans HK', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--hkia-charcoal);
+      color: #E8E8E8;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 32px;
+      background: linear-gradient(180deg, rgba(0,64,64,0.97) 0%, rgba(0,64,64,0.92) 100%);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(200,150,62,0.25);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .header-logo {
+      height: 36px;
+      width: auto;
+      border-radius: 4px;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 28px;
+      background: rgba(200,150,62,0.35);
+    }
+
+    .header-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.06em;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .header-title-zh {
+      font-family: var(--font-cjk);
+      font-weight: 500;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.12em;
+      display: block;
+      margin-top: 1px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .header-time {
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: var(--hkia-gold);
+      letter-spacing: 0.08em;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.75rem;
+      color: var(--hkia-sign-green);
+      letter-spacing: 0.04em;
+    }
+
+    .header-status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--hkia-sign-green);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--hkia-sign-green); }
+      50% { opacity: 0.5; box-shadow: 0 0 8px var(--hkia-sign-green); }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 32px 80px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% 20%, rgba(0,107,106,0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 60% at 80% 80%, rgba(200,150,62,0.08) 0%, transparent 50%),
+        linear-gradient(180deg, var(--hkia-charcoal) 0%, #0F1F1F 100%);
+      z-index: 0;
+    }
+
+    /* Runway lights */
+    .runway {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 40%;
+      background: repeating-linear-gradient(
+        to top,
+        transparent 0px,
+        transparent 20px,
+        rgba(255,255,255,0.06) 20px,
+        rgba(255,255,255,0.06) 22px
+      );
+      z-index: 0;
+    }
+
+    .runway-glow {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 30%;
+      background: linear-gradient(to top, rgba(0,107,106,0.12) 0%, transparent 100%);
+      z-index: 0;
+    }
+
+    /* Floating particles */
+    .particles {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: rgba(200,150,62,0.3);
+      border-radius: 50%;
+      animation: float-up linear infinite;
+    }
+
+    @keyframes float-up {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 860px;
+    }
+
+    /* Airport-style wayfinding badge */
+    .terminal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 20px;
+      background: var(--hkia-sign-bg);
+      border: 1px solid rgba(255,208,54,0.2);
+      border-radius: 6px;
+      margin-bottom: 36px;
+      animation: fade-slide-down 0.8s ease-out both;
+    }
+
+    .terminal-badge-icon {
+      width: 18px; height: 18px;
+      fill: var(--hkia-sign-yellow);
+    }
+
+    .terminal-badge-text {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.78rem;
+      color: var(--hkia-sign-yellow);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    @keyframes fade-slide-down {
+      from { opacity: 0; transform: translateY(-16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-heading {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(2.2rem, 5.5vw, 4.2rem);
+      line-height: 1.1;
+      color: #fff;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+      animation: fade-slide-down 0.8s 0.15s ease-out both;
+    }
+
+    .hero-heading-accent {
+      background: linear-gradient(135deg, var(--hkia-gold) 0%, var(--hkia-amber) 50%, var(--hkia-gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-heading-zh {
+      font-family: var(--font-cjk);
+      font-weight: 700;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.18em;
+      margin-bottom: 28px;
+      animation: fade-slide-down 0.8s 0.25s ease-out both;
+    }
+
+    .hero-sub {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+      color: rgba(255,255,255,0.55);
+      line-height: 1.7;
+      max-width: 560px;
+      margin: 0 auto 48px;
+      animation: fade-slide-down 0.8s 0.35s ease-out both;
+    }
+
+    /* ── FLIGHT BOARD BUTTON ── */
+    .cta-area {
+      animation: fade-slide-down 0.8s 0.5s ease-out both;
+    }
+
+    .flight-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 44px;
+      background: linear-gradient(135deg, var(--hkia-teal) 0%, var(--hkia-dark) 100%);
+      border: 1px solid rgba(200,150,62,0.35);
+      border-radius: 8px;
+      color: #fff;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.05rem;
+      letter-spacing: 0.06em;
+      text-decoration: none;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      overflow: hidden;
+    }
+
+    .flight-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(200,150,62,0.15) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+
+    .flight-btn:hover {
+      transform: translateY(-3px);
+      border-color: var(--hkia-gold);
+      box-shadow:
+        0 8px 32px rgba(0,107,106,0.3),
+        0 0 0 1px rgba(200,150,62,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .flight-btn:hover::before { opacity: 1; }
+
+    .flight-btn:active { transform: translateY(-1px); }
+
+    .flight-btn-icon {
+      width: 22px; height: 22px;
+      fill: var(--hkia-gold);
+      transition: transform 0.35s ease;
+    }
+
+    .flight-btn:hover .flight-btn-icon {
+      transform: translateX(4px);
+    }
+
+    .flight-btn-sub {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.08em;
+      margin-top: 2px;
+    }
+
+    /* ── INFO STRIP ── */
+    .info-strip {
+      position: relative;
+      z-index: 2;
+      margin-top: 64px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fade-slide-down 0.8s 0.65s ease-out both;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .info-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+    }
+
+    .info-dot--green { background: var(--hkia-sign-green); }
+    .info-dot--amber { background: var(--hkia-amber); }
+    .info-dot--blue { background: var(--hkia-sign-blue); }
+
+    /* ── FIDS (Flight Information Display) SECTION ── */
+    .fids-section {
+      position: relative;
+      padding: 80px 32px;
+      background: linear-gradient(180deg, #0F1F1F 0%, var(--hkia-charcoal) 100%);
+    }
+
+    .fids-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .fids-sign {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--hkia-sign-bg);
+      border-radius: 4px;
+      border-left: 3px solid var(--hkia-sign-yellow);
+    }
+
+    .fids-sign-icon {
+      width: 16px; height: 16px;
+      fill: var(--hkia-sign-yellow);
+    }
+
+    .fids-sign-text {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.72rem;
+      color: var(--hkia-sign-yellow);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .fids-board {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--hkia-sign-bg);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+    }
+
+    .fids-row {
+      display: grid;
+      grid-template-columns: 90px 1fr 140px 100px 110px;
+      padding: 14px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      align-items: center;
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      letter-spacing: 0.03em;
+      transition: background 0.2s ease;
+    }
+
+    .fids-row:hover { background: rgba(255,255,255,0.02); }
+
+    .fids-row--header {
+      background: rgba(0,107,106,0.2);
+      font-weight: 600;
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .fids-row--header:hover { background: rgba(0,107,106,0.2); }
+
+    .fids-flight { color: var(--hkia-sign-yellow); font-weight: 600; }
+    .fids-dest { color: #fff; font-weight: 500; }
+    .fids-dest-zh {
+      font-family: var(--font-cjk);
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.35);
+    }
+    .fids-time { color: rgba(255,255,255,0.7); font-variant-numeric: tabular-nums; }
+    .fids-gate { color: rgba(255,255,255,0.5); }
+
+    .fids-status {
+      font-weight: 600;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .fids-status--ontime { color: var(--hkia-sign-green); }
+    .fids-status--boarding { color: var(--hkia-sign-yellow); animation: blink 1.5s ease-in-out infinite; }
+    .fids-status--delayed { color: var(--hkia-sign-red); }
+    .fids-status--departed { color: var(--hkia-sign-blue); }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ── WAYFINDING CARDS ── */
+    .wayfinding {
+      padding: 80px 32px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .wayfinding-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .way-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 28px 24px;
+      transition: all 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .way-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 3px;
+      background: var(--hkia-teal);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+
+    .way-card:hover::before { transform: scaleX(1); }
+
+    .way-card:hover {
+      background: rgba(0,107,106,0.06);
+      border-color: rgba(0,107,106,0.2);
+      transform: translateY(-4px);
+    }
+
+    .way-card-icon {
+      width: 36px; height: 36px;
+      fill: var(--hkia-gold);
+      margin-bottom: 18px;
+    }
+
+    .way-card-title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .way-card-title-zh {
+      font-family: var(--font-cjk);
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 12px;
+    }
+
+    .way-card-desc {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.6;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      position: relative;
+      padding: 40px 32px;
+      background: var(--hkia-dark);
+      border-top: 1px solid rgba(200,150,62,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      height: 28px;
+      width: auto;
+      border-radius: 3px;
+    }
+
+    .footer-text {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.04em;
+    }
+
+    .footer-text-zh {
+      font-family: var(--font-cjk);
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.2);
+    }
+
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-link {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.2s ease;
+    }
+
+    .footer-link:hover { color: var(--hkia-gold); }
+
+    /* ── PAGE TRANSITION OVERLAY ── */
+    .page-transition-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .page-transition-overlay.active {
+      pointer-events: all;
+      opacity: 1;
+    }
+
+    .page-transition-overlay::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--hkia-charcoal);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    .page-transition-overlay.active::before {
+      transform: scaleY(1);
+    }
+
+    .page-transition-overlay .transition-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease 0.35s, transform 0.3s ease 0.35s;
+    }
+
+    .page-transition-overlay.active .transition-content {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .transition-plane {
+      width: 48px;
+      height: 48px;
+      fill: var(--hkia-gold);
+      animation: fly-right 1.2s ease-in-out infinite;
+    }
+
+    @keyframes fly-right {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(12px); }
+    }
+
+    .transition-text {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      margin-top: 16px;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      .header { padding: 12px 16px; }
+      .header-logo { height: 28px; }
+      .header-title { font-size: 0.85rem; }
+      .header-title-zh { display: none; }
+      .header-time { display: none; }
+
+      .hero { padding: 100px 20px 60px; }
+      .hero-heading { font-size: 1.8rem; }
+      .hero-heading-zh { font-size: 0.9rem; }
+
+      .flight-btn { padding: 16px 32px; font-size: 0.9rem; }
+
+      .info-strip { gap: 16px; }
+
+      .fids-row {
+        grid-template-columns: 70px 1fr 80px 80px;
+        padding: 10px 14px;
+        font-size: 0.72rem;
+      }
+      .fids-gate { display: none; }
+
+      .wayfinding-grid { grid-template-columns: 1fr; }
+
+      .footer {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+    }
+
+    /* ── GRAIN OVERLAY ── */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 180px;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--hkia-charcoal); }
+    ::-webkit-scrollbar-thumb { background: var(--hkia-teal); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <div class="grain"></div>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <img src="logo.png" alt="BeGood Logo" class="header-logo">
+      <div class="header-divider"></div>
+      <div>
+        <div class="header-title">Hong Kong International Airport</div>
+        <span class="header-title-zh">香港國際機場</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="header-time" id="headerTime">--:--:-- HKT</div>
+      <div class="header-status">
+        <span class="header-status-dot"></span>
+        All Systems Operational
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="runway"></div>
+    <div class="runway-glow"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="hero-content">
+      <div class="terminal-badge">
+        <svg class="terminal-badge-icon" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+        <span class="terminal-badge-text">Virtual Terminal — Gate A1</span>
+      </div>
+
+      <h1 class="hero-heading">
+        Welcome to<br>
+        <span class="hero-heading-accent">HKIA Virtual</span>
+      </h1>
+      <div class="hero-heading-zh">歡迎來到香港國際機場虛擬航站樓</div>
+
+      <p class="hero-sub">
+        Experience the gateway to Asia. Access real-time flight information, terminal services, and departure boards from anywhere in the world.
+      </p>
+
+      <div class="cta-area">
+        <a href="https://tung-insiderone.github.io/tar-flightboard/" class="flight-btn" onclick="navigateWithTransition(event, this.href)">
+          <span>
+            View Flight Board
+            <span class="flight-btn-sub">查看航班資訊顯示板</span>
+          </span>
+          <svg class="flight-btn-icon" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+        </a>
+      </div>
+
+      <div class="info-strip">
+        <div class="info-item">
+          <span class="info-dot info-dot--green"></span>
+          Terminal 1 Open
+        </div>
+        <div class="info-item">
+          <span class="info-dot info-dot--amber"></span>
+          142 Flights Today
+        </div>
+        <div class="info-item">
+          <span class="info-dot info-dot--blue"></span>
+          Weather: 24°C Partly Cloudy
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FIDS SECTION -->
+  <section class="fids-section">
+    <div class="fids-header">
+      <div class="fids-sign">
+        <svg class="fids-sign-icon" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+        <span class="fids-sign-text">Departures 離港</span>
+      </div>
+    </div>
+
+    <div class="fids-board">
+      <div class="fids-row fids-row--header">
+        <span>Flight</span>
+        <span>Destination</span>
+        <span>Time</span>
+        <span>Gate</span>
+        <span>Status</span>
+      </div>
+      <div class="fids-row">
+        <span class="fids-flight">CX 251</span>
+        <span class="fids-dest">Tokyo Narita <span class="fids-dest-zh">東京成田</span></span>
+        <span class="fids-time">08:45</span>
+        <span class="fids-gate">A16</span>
+        <span class="fids-status fids-status--boarding">Boarding</span>
+      </div>
+      <div class="fids-row">
+        <span class="fids-flight">HX 368</span>
+        <span class="fids-dest">Bangkok <span class="fids-dest-zh">曼谷</span></span>
+        <span class="fids-time">09:10</span>
+        <span class="fids-gate">B23</span>
+        <span class="fids-status fids-status--ontime">On Time</span>
+      </div>
+      <div class="fids-row">
+        <span class="fids-flight">CX 880</span>
+        <span class="fids-dest">San Francisco <span class="fids-dest-zh">三藩市</span></span>
+        <span class="fids-time">09:35</span>
+        <span class="fids-gate">C41</span>
+        <span class="fids-status fids-status--ontime">On Time</span>
+      </div>
+      <div class="fids-row">
+        <span class="fids-flight">KA 802</span>
+        <span class="fids-dest">Shanghai Pudong <span class="fids-dest-zh">上海浦東</span></span>
+        <span class="fids-time">10:05</span>
+        <span class="fids-gate">A08</span>
+        <span class="fids-status fids-status--delayed">Delayed</span>
+      </div>
+      <div class="fids-row">
+        <span class="fids-flight">CX 715</span>
+        <span class="fids-dest">London Heathrow <span class="fids-dest-zh">倫敦希斯路</span></span>
+        <span class="fids-time">10:25</span>
+        <span class="fids-gate">D60</span>
+        <span class="fids-status fids-status--ontime">On Time</span>
+      </div>
+      <div class="fids-row">
+        <span class="fids-flight">UO 542</span>
+        <span class="fids-dest">Taipei Taoyuan <span class="fids-dest-zh">台北桃園</span></span>
+        <span class="fids-time">10:50</span>
+        <span class="fids-gate">B11</span>
+        <span class="fids-status fids-status--departed">Departed</span>
+      </div>
+      <div class="fids-row">
+        <span class="fids-flight">CX 133</span>
+        <span class="fids-dest">Sydney <span class="fids-dest-zh">悉尼</span></span>
+        <span class="fids-time">11:15</span>
+        <span class="fids-gate">C35</span>
+        <span class="fids-status fids-status--boarding">Boarding</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- WAYFINDING -->
+  <section class="wayfinding">
+    <div class="wayfinding-grid">
+      <div class="way-card">
+        <svg class="way-card-icon" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+        <div class="way-card-title">Flight Information</div>
+        <div class="way-card-title-zh">航班資訊</div>
+        <div class="way-card-desc">Real-time arrivals, departures, and gate assignments across all terminals.</div>
+      </div>
+      <div class="way-card">
+        <svg class="way-card-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+        <div class="way-card-title">Terminal Map</div>
+        <div class="way-card-title-zh">航站樓地圖</div>
+        <div class="way-card-desc">Navigate terminals, lounges, dining, and duty-free shopping areas.</div>
+      </div>
+      <div class="way-card">
+        <svg class="way-card-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+        <div class="way-card-title">Travel Services</div>
+        <div class="way-card-title-zh">旅行服務</div>
+        <div class="way-card-desc">Currency exchange, baggage services, transit hotel bookings, and more.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-left">
+      <img src="logo.png" alt="BeGood Logo" class="footer-logo">
+      <div>
+        <div class="footer-text">Hong Kong International Airport — Virtual Terminal</div>
+        <div class="footer-text-zh">香港國際機場 — 虛擬航站樓</div>
+      </div>
+    </div>
+    <div class="footer-right">
+      <a href="https://tung-insiderone.github.io/tar-flightboard/" class="footer-link" onclick="navigateWithTransition(event, this.href)">Flight Board</a>
+      <span class="footer-link">|</span>
+      <span class="footer-link">HKIA Virtual</span>
+    </div>
+  </footer>
+
+  <!-- PAGE TRANSITION OVERLAY -->
+  <div class="page-transition-overlay" id="pageTransition">
+    <div class="transition-content">
+      <svg class="transition-plane" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+      <div class="transition-text">Departing...</div>
+    </div>
+  </div>
+
+  <script>
+    // Page transition navigation
+    function navigateWithTransition(e, url) {
+      e.preventDefault();
+      const overlay = document.getElementById('pageTransition');
+      overlay.classList.add('active');
+      setTimeout(function() {
+        window.location.href = url;
+      }, 700);
+    }
+
+    // Live HKT clock
+    function updateClock() {
+      const now = new Date();
+      const hkt = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Hong_Kong' }));
+      const h = String(hkt.getHours()).padStart(2, '0');
+      const m = String(hkt.getMinutes()).padStart(2, '0');
+      const s = String(hkt.getSeconds()).padStart(2, '0');
+      document.getElementById('headerTime').textContent = h + ':' + m + ':' + s + ' HKT';
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // Floating particles
+    (function initParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (8 + Math.random() * 14) + 's';
+        p.style.animationDelay = (Math.random() * 10) + 's';
+        p.style.width = p.style.height = (1.5 + Math.random() * 2) + 'px';
+        container.appendChild(p);
+      }
+    })();
+  </script>
+</body>
+</html>
