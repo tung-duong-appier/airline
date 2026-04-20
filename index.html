@@ -1077,13 +1077,22 @@
         bookedAt: new Date().toISOString()
       });
 
-      fetch(GOOGLE_SHEET_WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: payload
-      })
-      .then(function(res) { return res.json(); })
-      .then(function(result) {
+      // Use JSONP to bypass CORS — Google Apps Script supports ?callback=
+      var cbName = 'bookingCb_' + Date.now();
+      var script = document.createElement('script');
+      var timeout = setTimeout(function() {
+        delete window[cbName];
+        document.body.removeChild(script);
+        fb.className = '';
+        fb.textContent = '✕ Connection error. Please try again.';
+        document.getElementById('tmSubmit').disabled = false;
+      }, 10000);
+
+      window[cbName] = function(result) {
+        clearTimeout(timeout);
+        delete window[cbName];
+        document.body.removeChild(script);
+
         if (result.status === 'ok') {
           fb.className = 'ok';
           fb.textContent = '✓ Booking confirmed! Your ticket has been reserved.';
@@ -1104,12 +1113,21 @@
           fb.textContent = '✕ Something went wrong. Please try again.';
           document.getElementById('tmSubmit').disabled = false;
         }
-      })
-      .catch(function() {
-        fb.className = '';
-        fb.textContent = '✕ Connection error. Please try again.';
-        document.getElementById('tmSubmit').disabled = false;
-      });
+      };
+
+      // Encode all booking data as URL params for JSONP GET request
+      var params = '?callback=' + cbName +
+        '&action=book' +
+        '&flight=' + encodeURIComponent(currentFlight.flight) +
+        '&airline=' + encodeURIComponent(currentFlight.airline) +
+        '&destination=' + encodeURIComponent(currentFlight.dest) +
+        '&departure=' + encodeURIComponent(currentFlight.dep) +
+        '&arrival=' + encodeURIComponent(currentFlight.arr) +
+        '&password=' + encodeURIComponent(pwd) +
+        '&bookedAt=' + encodeURIComponent(new Date().toISOString());
+
+      script.src = GOOGLE_SHEET_WEBHOOK + params;
+      document.body.appendChild(script);
     };
 
     // ── RENDER FLIGHTS ─────────────────────────────────────────────
