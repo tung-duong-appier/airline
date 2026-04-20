@@ -1032,8 +1032,6 @@
 
     // ── TICKET BOOKING CONFIG ──────────────────────────────────────
     var GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbyI5i-MMboVLOqL8NWYpXK3zSu1LLO4025jLaIKdEqGjeLJB3p29i1uxursdNcebxP_uw/exec'; // <-- replace with your Apps Script URL
-    var MAX_BOOKINGS_PER_FLIGHT = 3;
-    var bookingCounts = {};
 
     // ── MODAL SETUP ────────────────────────────────────────────────
     var currentFlight = null;
@@ -1067,14 +1065,8 @@
       if (!pwd) { fb.className = ''; fb.textContent = '⚠ Please enter your password.'; return; }
 
       document.getElementById('tmSubmit').disabled = true;
-      fb.className = ''; fb.textContent = 'Processing...';
+      fb.className = ''; fb.textContent = 'Checking availability...';
 
-      var key = currentFlight.flight.replace(/\s/g, '_');
-      if (!bookingCounts[key]) bookingCounts[key] = 0;
-      bookingCounts[key]++;
-      var count = bookingCounts[key];
-
-      // Send to Google Sheet
       var payload = JSON.stringify({
         flight: currentFlight.flight,
         airline: currentFlight.airline,
@@ -1082,39 +1074,42 @@
         departure: currentFlight.dep,
         arrival: currentFlight.arr,
         password: pwd,
-        bookedAt: new Date().toISOString(),
-        bookingCount: count
+        bookedAt: new Date().toISOString()
       });
-      try {
-        fetch(GOOGLE_SHEET_WEBHOOK, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: payload
-        });
-      } catch(e) {}
 
-      fb.className = 'ok';
-      fb.textContent = '✓ Booking confirmed! Your ticket has been reserved.';
-
-      // Update button if sold out
-      var btn = document.querySelector('.purchase-btn[data-key="' + key + '"]');
-      if (btn && count >= MAX_BOOKINGS_PER_FLIGHT) {
-        btn.textContent = '✕ Sold Out';
-        btn.disabled = true;
-        btn.classList.add('sold-out');
-      }
-
-      var flightSnapshot = currentFlight;
-      setTimeout(function() {
-        closeModal();
-        document.getElementById('tmSubmit').disabled = false;
-        if (count >= MAX_BOOKINGS_PER_FLIGHT) {
+      fetch(GOOGLE_SHEET_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(result) {
+        if (result.status === 'ok') {
+          fb.className = 'ok';
+          fb.textContent = '✓ Booking confirmed! Your ticket has been reserved.';
           setTimeout(function() {
-            alert('⚠️ Flight ' + flightSnapshot.flight + ' to ' + flightSnapshot.dest +
-              ' is now SOLD OUT!\nAll ' + MAX_BOOKINGS_PER_FLIGHT + ' seats have been booked.');
-          }, 100);
+            closeModal();
+            document.getElementById('tmSubmit').disabled = false;
+          }, 1800);
+        } else if (result.status === 'sold_out') {
+          fb.className = '';
+          fb.textContent = '✕ Sorry, this flight is fully booked. No seats remaining.';
+          document.getElementById('tmSubmit').disabled = false;
+        } else if (result.status === 'duplicate_password') {
+          fb.className = '';
+          fb.textContent = '✕ Your team has already booked a ticket. Only 1 booking per team is allowed.';
+          document.getElementById('tmSubmit').disabled = false;
+        } else {
+          fb.className = '';
+          fb.textContent = '✕ Something went wrong. Please try again.';
+          document.getElementById('tmSubmit').disabled = false;
         }
-      }, 1500);
+      })
+      .catch(function() {
+        fb.className = '';
+        fb.textContent = '✕ Connection error. Please try again.';
+        document.getElementById('tmSubmit').disabled = false;
+      });
     };
 
     // ── RENDER FLIGHTS ─────────────────────────────────────────────
@@ -1127,11 +1122,7 @@
       for (var i = 0; i < pageFlights.length; i++) {
         var f = pageFlights[i];
         var key = f.flight.replace(/\s/g, '_');
-        var count = bookingCounts[key] || 0;
-        var soldOut = count >= MAX_BOOKINGS_PER_FLIGHT;
-        var btnHtml = soldOut
-          ? '<button class="purchase-btn sold-out" disabled data-key="' + key + '">✕ Sold Out</button>'
-          : '<button class="purchase-btn" data-key="' + key + '" data-idx="' + (start + i) + '">✈ Purchase Ticket</button>';
+        var btnHtml = '<button class="purchase-btn" data-key="' + key + '" data-idx="' + (start + i) + '">✈ Purchase Ticket</button>';
         html += '<div class="fids-row">' +
           '<span class="fids-flight">' + f.flight + '</span>' +
           '<span class="fids-airline">' + f.airline + '</span>' +
@@ -1167,26 +1158,8 @@
       }, 500);
     }
 
-    // ── FETCH GLOBAL BOOKING COUNTS FROM SHEET ON LOAD ────────────
-    function loadBookingCounts(callback) {
-      fetch(GOOGLE_SHEET_WEBHOOK, { method: 'GET' })
-        .then(function(res) { return res.json(); })
-        .then(function(counts) {
-          for (var flight in counts) {
-            var key = flight.replace(/\s/g, '_');
-            bookingCounts[key] = counts[flight];
-          }
-          callback();
-        })
-        .catch(function() {
-          callback(); // fallback: render with local counts if fetch fails
-        });
-    }
-
-    // Initial render — fetch global counts first, then render
-    loadBookingCounts(function() {
-      renderFlights(0);
-    });
+    // Initial render
+    renderFlights(0);
 
     // Rotate every 10 seconds
     setInterval(rotateFids, 10000);
