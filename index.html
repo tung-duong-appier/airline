@@ -1167,8 +1167,27 @@
       }, 500);
     }
 
-    // Initial render
-    renderFlights(0);
+    // ── FETCH GLOBAL BOOKING COUNTS FROM SHEET ON LOAD ────────────
+    function loadBookingCounts(callback) {
+      fetch(GOOGLE_SHEET_WEBHOOK, { method: 'GET' })
+        .then(function(res) { return res.json(); })
+        .then(function(counts) {
+          for (var flight in counts) {
+            var key = flight.replace(/\s/g, '_');
+            bookingCounts[key] = counts[flight];
+          }
+          callback();
+        })
+        .catch(function() {
+          callback(); // fallback: render with local counts if fetch fails
+        });
+    }
+
+    // Initial render — fetch global counts first, then render
+    loadBookingCounts(function() {
+      renderFlights(0);
+    });
+
     // Rotate every 10 seconds
     setInterval(rotateFids, 10000);
   </script>
