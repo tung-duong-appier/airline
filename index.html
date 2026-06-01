@@ -570,7 +570,7 @@
     .fids-status--ontime { color: var(--hkia-sign-green); }
     .fids-status--boarding { color: var(--hkia-sign-yellow); animation: blink 1.5s ease-in-out infinite; }
     .fids-status--delayed { color: var(--hkia-sign-red); }
-    .fids-status--arrived { color: var(--hkia-sign-blue); }
+    .fids-status--departed { color: var(--hkia-sign-blue); }
 
     @keyframes blink {
       0%, 100% { opacity: 1; }
@@ -947,7 +947,7 @@
       <button id="tmClose">✕</button>
       <h2>✈ Purchase Ticket</h2>
       <div id="tmFlightInfo"></div>
-      <p>Are you sure you want to book this ticket?</p>
+      <p>Are you sure you want to book this ticket?<br><span style="font-size:0.82rem;color:rgba(255,255,255,0.45);font-style:italic;">(Please make sure you don't book the wrong ticket)</span></p>
       <input id="tmPassword" type="password" placeholder="Enter your password to book" autocomplete="off" />
       <div id="tmFeedback"></div>
       <div id="tmActions">
@@ -1002,7 +1002,7 @@
       }
     })();
 
-// Flight data — 24 flights, 3 pages of 8
+    // Flight data — 24 flights, 3 pages of 8
     var flights = [
       // Page 1
       { flight: 'HX 368', airline: 'Hong Kong Airlines', iata: 'BKK', dest: 'Bangkok', transit: 'Direct', arr: '21:15', status: 'ontime', statusText: 'On Time' },
@@ -1101,11 +1101,15 @@
           }, 1800);
         } else if (result.status === 'sold_out') {
           fb.className = '';
-          fb.textContent = '✕ Sorry, this flight is fully booked. No seats remaining.';
+          fb.textContent = '✕ Flight is fully booked, please choose another flight.';
           document.getElementById('tmSubmit').disabled = false;
         } else if (result.status === 'duplicate_password') {
           fb.className = '';
           fb.textContent = '✕ Your team has already booked a ticket. Only 1 booking per team is allowed.';
+          document.getElementById('tmSubmit').disabled = false;
+        } else if (result.status === 'invalid_password') {
+          fb.className = '';
+          fb.textContent = '✕ Invalid password. Please try again.';
           document.getElementById('tmSubmit').disabled = false;
         } else {
           fb.className = '';
