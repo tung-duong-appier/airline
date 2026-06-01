@@ -364,7 +364,7 @@
 
     .fids-row {
       display: grid;
-      grid-template-columns: 80px 160px 70px 1fr 120px 90px 90px 110px 150px;
+      grid-template-columns: 80px 160px 70px 1fr 120px 90px 110px 150px;
       padding: 14px 24px;
       border-bottom: 1px solid rgba(255,255,255,0.04);
       align-items: center;
@@ -570,7 +570,7 @@
     .fids-status--ontime { color: var(--hkia-sign-green); }
     .fids-status--boarding { color: var(--hkia-sign-yellow); animation: blink 1.5s ease-in-out infinite; }
     .fids-status--delayed { color: var(--hkia-sign-red); }
-    .fids-status--departed { color: var(--hkia-sign-blue); }
+    .arrived { color: var(--hkia-sign-blue); }
 
     @keyframes blink {
       0%, 100% { opacity: 1; }
@@ -781,7 +781,7 @@
       .info-strip { gap: 16px; }
 
       .fids-row {
-        grid-template-columns: 60px 70px 50px 1fr 0 70px 70px 80px 0;
+        grid-template-columns: 60px 70px 50px 1fr 0 70px 80px 0;
         padding: 10px 14px;
         font-size: 0.68rem;
       }
@@ -892,9 +892,8 @@
         <span>Flight</span>
         <span>Airline</span>
         <span>IATA</span>
-        <span>Destination</span>
+        <span>Airport</span>
         <span>Transit</span>
-        <span>Departure</span>
         <span>Arrival</span>
         <span>Status</span>
         <span>Action</span>
@@ -1005,32 +1004,32 @@
     // Flight data — 24 flights, 3 pages of 8
     var flights = [
       // Page 1
-      { flight: 'CX 251', airline: 'Cathay Pacific', iata: 'NRT', dest: 'Tokyo Narita', transit: 'Direct', dep: '08:45', arr: '13:30', status: 'boarding', statusText: 'Boarding' },
-      { flight: 'HX 368', airline: 'Hong Kong Airlines', iata: 'BKK', dest: 'Bangkok', transit: 'Direct', dep: '09:10', arr: '12:25', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 880', airline: 'Cathay Pacific', iata: 'SFO', dest: 'San Francisco', transit: 'Direct', dep: '09:35', arr: '09:50+1', status: 'ontime', statusText: 'On Time' },
-      { flight: 'KA 802', airline: 'Cathay Dragon', iata: 'PVG', dest: 'Shanghai Pudong', transit: 'Direct', dep: '10:05', arr: '12:35', status: 'delayed', statusText: 'Delayed' },
-      { flight: 'CX 715', airline: 'Cathay Pacific', iata: 'LHR', dest: 'London Heathrow', transit: 'Direct', dep: '10:25', arr: '16:10', status: 'ontime', statusText: 'On Time' },
-      { flight: 'UO 542', airline: 'HK Express', iata: 'TPE', dest: 'Taipei Taoyuan', transit: 'Direct', dep: '10:50', arr: '12:40', status: 'departed', statusText: 'Departed' },
-      { flight: 'CX 133', airline: 'Cathay Pacific', iata: 'SYD', dest: 'Sydney', transit: 'Direct', dep: '11:15', arr: '22:45', status: 'boarding', statusText: 'Boarding' },
-      { flight: 'SQ 861', airline: 'Singapore Airlines', iata: 'SIN', dest: 'Singapore', transit: 'Direct', dep: '11:40', arr: '15:30', status: 'ontime', statusText: 'On Time' },
+      { flight: 'HX 368', airline: 'Hong Kong Airlines', iata: 'BKK', dest: 'Bangkok', transit: 'Direct', arr: '21:15', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 880', airline: 'Cathay Pacific', iata: 'BAL', dest: 'Bali', transit: 'Direct', arr: '21:08', status: 'ontime', statusText: 'On Time' },
+      { flight: 'KA 802', airline: 'Cathay Dragon', iata: 'PEK', dest: 'Beijing', transit: 'Direct', arr: '20:19', status: 'delayed', statusText: 'Delayed' },
+      { flight: 'CX 715', airline: 'Cathay Pacific', iata: 'HND', dest: 'Haneda', transit: 'Direct', arr: '21:15', status: 'ontime', statusText: 'On Time' },
+      { flight: 'UO 542', airline: 'HK Express', iata: 'TPE', dest: 'Taoyuan', transit: 'Direct', arr: '20:40', status: 'arrrived', statusText: 'Arrived' },
+      { flight: 'CX 251', airline: 'Cathay Pacific', iata: 'NRT', dest: 'Narita', transit: 'Direct', arr: '21:00', status: 'delayed', statusText: 'Delayed' },
+      { flight: 'CX 133', airline: 'Cathay Pacific', iata: 'KIX', dest: 'Kansai', transit: 'Direct', arr: '22:03', status: 'boarding', statusText: 'Boarding' },
+      { flight: 'SQ 861', airline: 'Singapore Airlines', iata: 'CTS', dest: 'Sapporo', transit: 'Direct', arr: '21:33', status: 'ontime', statusText: 'On Time' },
       // Page 2
-      { flight: 'CX 451', airline: 'Cathay Pacific', iata: 'ICN', dest: 'Seoul Incheon', transit: 'Direct', dep: '12:00', arr: '16:30', status: 'ontime', statusText: 'On Time' },
-      { flight: 'NH 812', airline: 'ANA', iata: 'KIX', dest: 'Osaka Kansai', transit: 'Direct', dep: '12:25', arr: '17:05', status: 'boarding', statusText: 'Boarding' },
-      { flight: 'EK 381', airline: 'Emirates', iata: 'DXB', dest: 'Dubai', transit: 'Direct', dep: '12:50', arr: '17:20', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 903', airline: 'Cathay Pacific', iata: 'KUL', dest: 'Kuala Lumpur', transit: 'Direct', dep: '13:15', arr: '17:10', status: 'delayed', statusText: 'Delayed' },
-      { flight: 'QF 118', airline: 'Qantas', iata: 'MEL', dest: 'Melbourne', transit: 'Via Sydney', dep: '13:40', arr: '01:15+1', status: 'ontime', statusText: 'On Time' },
-      { flight: 'TG 601', airline: 'Thai Airways', iata: 'HKT', dest: 'Phuket', transit: 'Via Bangkok', dep: '14:00', arr: '18:45', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 521', airline: 'Cathay Pacific', iata: 'SGN', dest: 'Ho Chi Minh City', transit: 'Direct', dep: '14:30', arr: '16:50', status: 'departed', statusText: 'Departed' },
-      { flight: 'JL 736', airline: 'Japan Airlines', iata: 'NGO', dest: 'Nagoya', transit: 'Direct', dep: '14:55', arr: '19:40', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 451', airline: 'Cathay Pacific', iata: 'ICN', dest: 'Incheon', transit: 'Direct', arr: '21:31', status: 'ontime', statusText: 'On Time' },
+      { flight: 'NH 812', airline: 'ANA', iata: 'ITM', dest: 'Itami', transit: 'Direct', arr: '20:55', status: 'boarding', statusText: 'Boarding' },
+      { flight: 'EK 381', airline: 'Emirates', iata: 'BKK', dest: 'Suvarnabhumi', transit: 'Direct', arr: '22:20', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 903', airline: 'Cathay Pacific', iata: 'HIJ', dest: 'Hiroshima', transit: 'Direct', arr: '21:18', status: 'delayed', statusText: 'Delayed' },
+      { flight: 'QF 118', airline: 'Qantas', iata: 'HND', dest: 'Haneda', transit: 'Via Taoyuan', arr: '21:10', status: 'ontime', statusText: 'On Time' },
+      { flight: 'TG 601', airline: 'Thai Airways', iata: 'HKT', dest: 'Phuket', transit: 'Via Suvarnabhumi', arr: '20:45', status: 'boarding', statusText: 'Boarding' },
+      { flight: 'CX 521', airline: 'Cathay Pacific', iata: 'HAN', dest: 'Noi Bai', transit: 'Direct', arr: '19:50', status: 'arrrived', statusText: 'Arrived' },
+      { flight: 'JL 736', airline: 'Japan Airlines', iata: 'NGO', dest: 'Nagoya', transit: 'Direct', arr: '22:40', status: 'ontime', statusText: 'On Time' },
       // Page 3
-      { flight: 'BA 028', airline: 'British Airways', iata: 'LGW', dest: 'London Gatwick', transit: 'Direct', dep: '15:20', arr: '21:05', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 105', airline: 'Cathay Pacific', iata: 'LAX', dest: 'Los Angeles', transit: 'Direct', dep: '15:45', arr: '14:30', status: 'boarding', statusText: 'Boarding' },
-      { flight: 'KE 602', airline: 'Korean Air', iata: 'PUS', dest: 'Busan', transit: 'Via Seoul', dep: '16:10', arr: '21:45', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 653', airline: 'Cathay Pacific', iata: 'DEL', dest: 'Delhi', transit: 'Direct', dep: '16:35', arr: '20:15', status: 'delayed', statusText: 'Delayed' },
-      { flight: 'UO 688', airline: 'HK Express', iata: 'DAD', dest: 'Da Nang', transit: 'Direct', dep: '17:00', arr: '19:15', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 257', airline: 'Cathay Pacific', iata: 'TSA', dest: 'Taipei Songshan', transit: 'Direct', dep: '17:25', arr: '19:15', status: 'ontime', statusText: 'On Time' },
-      { flight: 'SQ 001', airline: 'Singapore Airlines', iata: 'JFK', dest: 'New York JFK', transit: 'Via Singapore', dep: '17:50', arr: '06:20+1', status: 'ontime', statusText: 'On Time' },
-      { flight: 'CX 401', airline: 'Cathay Pacific', iata: 'MNL', dest: 'Manila', transit: 'Direct', dep: '18:15', arr: '20:30', status: 'boarding', statusText: 'Boarding' }
+      { flight: 'BA 028', airline: 'British Airways', iata: 'LGW', dest: 'Gatwick', transit: 'Direct', arr: '21:05', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 105', airline: 'Cathay Pacific', iata: 'LAX', dest: 'Los Angeles', transit: 'Direct', arr: '23:30', status: 'ontime', statusText: 'On Time' },
+      { flight: 'KE 602', airline: 'Korean Air', iata: 'PUS', dest: 'Gimhae', transit: 'Via Seoul', arr: '21:45', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 653', airline: 'Cathay Pacific', iata: 'DMK', dest: 'Don Mueang', transit: 'Direct', arr: '20:15', status: 'delayed', statusText: 'Delayed' },
+      { flight: 'UO 688', airline: 'HK Express', iata: 'DAD', dest: 'Da Nang', transit: 'Direct', arr: '19:15', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 257', airline: 'Cathay Pacific', iata: 'TSA', dest: 'Songshan', transit: 'Direct', arr: '19:15', status: 'ontime', statusText: 'On Time' },
+      { flight: 'SQ 001', airline: 'Singapore Airlines', iata: 'NRT', dest: 'Narita', transit: 'Direct', arr: '21:05', status: 'ontime', statusText: 'On Time' },
+      { flight: 'CX 401', airline: 'Cathay Pacific', iata: 'MNL', dest: 'Ninoy Aquino', transit: 'Via Singapore', arr: '20:55', status: 'boarding', statusText: 'Boarding' }
     ];
 
     var currentPage = 0;
@@ -1038,7 +1037,7 @@
     var flightsPerPage = 8;
 
     // ── TICKET BOOKING CONFIG ──────────────────────────────────────
-    var GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbyI5i-MMboVLOqL8NWYpXK3zSu1LLO4025jLaIKdEqGjeLJB3p29i1uxursdNcebxP_uw/exec'; // <-- replace with your Apps Script URL
+    var GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxsTqwZcKas_PqKq-4BXzE67UIJwadBVFNXfP8D4Itiahi1uh60sIDLVkID_MvA3I8F/exec'; // <-- replace with your Apps Script URL
     var MAX_BOOKINGS_PER_FLIGHT = 3;
     var bookingCounts = {};
 
@@ -1050,7 +1049,7 @@
       currentFlight = flight;
       document.getElementById('tmFlightInfo').innerHTML =
         '<strong>' + flight.flight + '</strong>  ·  ' + flight.airline + '  →  ' + flight.dest +
-        '<br>Departure: ' + flight.dep + '  &nbsp;|&nbsp;  Arrival: ' + flight.arr;
+        '<br>Arrival: ' + flight.arr;
       document.getElementById('tmPassword').value = '';
       document.getElementById('tmFeedback').textContent = '';
       document.getElementById('tmFeedback').className = '';
@@ -1074,58 +1073,53 @@
       if (!pwd) { fb.className = ''; fb.textContent = '⚠ Please enter your password.'; return; }
 
       document.getElementById('tmSubmit').disabled = true;
-      fb.className = ''; fb.textContent = 'Checking availability...';
+      fb.className = ''; fb.textContent = 'Processing...';
 
-      // JSONP — bypasses CORS, reads response back from Apps Script
-      var cbName = 'bookingCb_' + Date.now();
-      var script = document.createElement('script');
-      var timer = setTimeout(function() {
-        delete window[cbName];
-        if (script.parentNode) document.body.removeChild(script);
-        fb.className = '';
-        fb.textContent = '✕ Connection error. Please try again.';
+      var key = currentFlight.flight.replace(/\s/g, '_');
+      if (!bookingCounts[key]) bookingCounts[key] = 0;
+      bookingCounts[key]++;
+      var count = bookingCounts[key];
+
+      // Send to Google Sheet
+      var payload = JSON.stringify({
+        flight: currentFlight.flight,
+        airline: currentFlight.airline,
+        destination: currentFlight.dest,
+        arrival: currentFlight.arr,
+        password: pwd,
+        bookedAt: new Date().toISOString(),
+        bookingCount: count
+      });
+      try {
+        fetch(GOOGLE_SHEET_WEBHOOK, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload
+        });
+      } catch(e) {}
+
+      fb.className = 'ok';
+      fb.textContent = '✓ Booking confirmed! Your ticket has been reserved.';
+
+      // Update button if sold out
+      var btn = document.querySelector('.purchase-btn[data-key="' + key + '"]');
+      if (btn && count >= MAX_BOOKINGS_PER_FLIGHT) {
+        btn.textContent = '✕ Sold Out';
+        btn.disabled = true;
+        btn.classList.add('sold-out');
+      }
+
+      var flightSnapshot = currentFlight;
+      setTimeout(function() {
+        closeModal();
         document.getElementById('tmSubmit').disabled = false;
-      }, 10000);
-
-      window[cbName] = function(result) {
-        clearTimeout(timer);
-        delete window[cbName];
-        if (script.parentNode) document.body.removeChild(script);
-
-        if (result.status === 'ok') {
-          fb.className = 'ok';
-          fb.textContent = '✓ Booking confirmed! Your ticket has been reserved.';
+        if (count >= MAX_BOOKINGS_PER_FLIGHT) {
           setTimeout(function() {
-            closeModal();
-            document.getElementById('tmSubmit').disabled = false;
-          }, 1800);
-        } else if (result.status === 'sold_out') {
-          fb.className = '';
-          fb.textContent = '✕ Sorry, this flight is fully booked. No seats remaining.';
-          document.getElementById('tmSubmit').disabled = false;
-        } else if (result.status === 'duplicate_password') {
-          fb.className = '';
-          fb.textContent = '✕ Your team has already booked a ticket. Only 1 booking per team is allowed.';
-          document.getElementById('tmSubmit').disabled = false;
-        } else {
-          fb.className = '';
-          fb.textContent = '✕ Something went wrong. Please try again.';
-          document.getElementById('tmSubmit').disabled = false;
+            alert('⚠️ Flight ' + flightSnapshot.flight + ' to ' + flightSnapshot.dest +
+              ' is now SOLD OUT!\nAll ' + MAX_BOOKINGS_PER_FLIGHT + ' seats have been booked.');
+          }, 100);
         }
-      };
-
-      script.src = GOOGLE_SHEET_WEBHOOK +
-        '?callback=' + cbName +
-        '&action=book' +
-        '&flight=' + encodeURIComponent(currentFlight.flight) +
-        '&airline=' + encodeURIComponent(currentFlight.airline) +
-        '&destination=' + encodeURIComponent(currentFlight.dest) +
-        '&departure=' + encodeURIComponent(currentFlight.dep) +
-        '&arrival=' + encodeURIComponent(currentFlight.arr) +
-        '&password=' + encodeURIComponent(pwd) +
-        '&bookedAt=' + encodeURIComponent(new Date().toISOString());
-
-      document.body.appendChild(script);
+      }, 1500);
     };
 
     // ── RENDER FLIGHTS ─────────────────────────────────────────────
@@ -1149,7 +1143,6 @@
           '<span class="fids-iata">' + f.iata + '</span>' +
           '<span class="fids-dest">' + f.dest + '</span>' +
           '<span class="fids-transit">' + f.transit + '</span>' +
-          '<span class="fids-time">' + f.dep + '</span>' +
           '<span class="fids-time">' + f.arr + '</span>' +
           '<span class="fids-status fids-status--' + f.status + '">' + f.statusText + '</span>' +
           btnHtml +
