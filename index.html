@@ -364,7 +364,7 @@
 
     .fids-row {
       display: grid;
-      grid-template-columns: 80px 160px 70px 1fr 120px 90px 110px 150px;
+      grid-template-columns: 80px 160px 70px 1fr 120px 90px 90px 110px 150px;
       padding: 14px 24px;
       border-bottom: 1px solid rgba(255,255,255,0.04);
       align-items: center;
@@ -570,7 +570,7 @@
     .fids-status--ontime { color: var(--hkia-sign-green); }
     .fids-status--boarding { color: var(--hkia-sign-yellow); animation: blink 1.5s ease-in-out infinite; }
     .fids-status--delayed { color: var(--hkia-sign-red); }
-    .arrived { color: var(--hkia-sign-blue); }
+    .fids-status--arrived { color: var(--hkia-sign-blue); }
 
     @keyframes blink {
       0%, 100% { opacity: 1; }
@@ -781,7 +781,7 @@
       .info-strip { gap: 16px; }
 
       .fids-row {
-        grid-template-columns: 60px 70px 50px 1fr 0 70px 80px 0;
+        grid-template-columns: 60px 70px 50px 1fr 0 70px 70px 80px 0;
         padding: 10px 14px;
         font-size: 0.68rem;
       }
@@ -892,8 +892,9 @@
         <span>Flight</span>
         <span>Airline</span>
         <span>IATA</span>
-        <span>Airport</span>
+        <span>Destination</span>
         <span>Transit</span>
+        <span>Departure</span>
         <span>Arrival</span>
         <span>Status</span>
         <span>Action</span>
@@ -1001,7 +1002,7 @@
       }
     })();
 
-    // Flight data — 24 flights, 3 pages of 8
+// Flight data — 24 flights, 3 pages of 8
     var flights = [
       // Page 1
       { flight: 'HX 368', airline: 'Hong Kong Airlines', iata: 'BKK', dest: 'Bangkok', transit: 'Direct', arr: '21:15', status: 'ontime', statusText: 'On Time' },
@@ -1037,7 +1038,7 @@
     var flightsPerPage = 8;
 
     // ── TICKET BOOKING CONFIG ──────────────────────────────────────
-    var GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxsTqwZcKas_PqKq-4BXzE67UIJwadBVFNXfP8D4Itiahi1uh60sIDLVkID_MvA3I8F/exec'; // <-- replace with your Apps Script URL
+    var GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbyI5i-MMboVLOqL8NWYpXK3zSu1LLO4025jLaIKdEqGjeLJB3p29i1uxursdNcebxP_uw/exec'; // <-- replace with your Apps Script URL
     var MAX_BOOKINGS_PER_FLIGHT = 3;
     var bookingCounts = {};
 
@@ -1049,7 +1050,7 @@
       currentFlight = flight;
       document.getElementById('tmFlightInfo').innerHTML =
         '<strong>' + flight.flight + '</strong>  ·  ' + flight.airline + '  →  ' + flight.dest +
-        '<br>Arrival: ' + flight.arr;
+        '<br>Departure: ' + flight.dep + '  &nbsp;|&nbsp;  Arrival: ' + flight.arr;
       document.getElementById('tmPassword').value = '';
       document.getElementById('tmFeedback').textContent = '';
       document.getElementById('tmFeedback').className = '';
@@ -1073,53 +1074,57 @@
       if (!pwd) { fb.className = ''; fb.textContent = '⚠ Please enter your password.'; return; }
 
       document.getElementById('tmSubmit').disabled = true;
-      fb.className = ''; fb.textContent = 'Processing...';
+      fb.className = ''; fb.textContent = 'Checking availability...';
 
-      var key = currentFlight.flight.replace(/\s/g, '_');
-      if (!bookingCounts[key]) bookingCounts[key] = 0;
-      bookingCounts[key]++;
-      var count = bookingCounts[key];
-
-      // Send to Google Sheet
-      var payload = JSON.stringify({
-        flight: currentFlight.flight,
-        airline: currentFlight.airline,
-        destination: currentFlight.dest,
-        arrival: currentFlight.arr,
-        password: pwd,
-        bookedAt: new Date().toISOString(),
-        bookingCount: count
-      });
-      try {
-        fetch(GOOGLE_SHEET_WEBHOOK, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: payload
-        });
-      } catch(e) {}
-
-      fb.className = 'ok';
-      fb.textContent = '✓ Booking confirmed! Your ticket has been reserved.';
-
-      // Update button if sold out
-      var btn = document.querySelector('.purchase-btn[data-key="' + key + '"]');
-      if (btn && count >= MAX_BOOKINGS_PER_FLIGHT) {
-        btn.textContent = '✕ Sold Out';
-        btn.disabled = true;
-        btn.classList.add('sold-out');
-      }
-
-      var flightSnapshot = currentFlight;
-      setTimeout(function() {
-        closeModal();
+      // JSONP — bypasses CORS, reads response back from Apps Script
+      var cbName = 'bookingCb_' + Date.now();
+      var script = document.createElement('script');
+      var timer = setTimeout(function() {
+        delete window[cbName];
+        if (script.parentNode) document.body.removeChild(script);
+        fb.className = '';
+        fb.textContent = '✕ Connection error. Please try again.';
         document.getElementById('tmSubmit').disabled = false;
-        if (count >= MAX_BOOKINGS_PER_FLIGHT) {
+      }, 10000);
+
+      window[cbName] = function(result) {
+        clearTimeout(timer);
+        delete window[cbName];
+        if (script.parentNode) document.body.removeChild(script);
+
+        if (result.status === 'ok') {
+          fb.className = 'ok';
+          fb.textContent = '✓ Booking confirmed! Your ticket has been reserved.';
           setTimeout(function() {
-            alert('⚠️ Flight ' + flightSnapshot.flight + ' to ' + flightSnapshot.dest +
-              ' is now SOLD OUT!\nAll ' + MAX_BOOKINGS_PER_FLIGHT + ' seats have been booked.');
-          }, 100);
+            closeModal();
+            document.getElementById('tmSubmit').disabled = false;
+          }, 1800);
+        } else if (result.status === 'sold_out') {
+          fb.className = '';
+          fb.textContent = '✕ Sorry, this flight is fully booked. No seats remaining.';
+          document.getElementById('tmSubmit').disabled = false;
+        } else if (result.status === 'duplicate_password') {
+          fb.className = '';
+          fb.textContent = '✕ Your team has already booked a ticket. Only 1 booking per team is allowed.';
+          document.getElementById('tmSubmit').disabled = false;
+        } else {
+          fb.className = '';
+          fb.textContent = '✕ Something went wrong. Please try again.';
+          document.getElementById('tmSubmit').disabled = false;
         }
-      }, 1500);
+      };
+
+      script.src = GOOGLE_SHEET_WEBHOOK +
+        '?callback=' + cbName +
+        '&action=book' +
+        '&flight=' + encodeURIComponent(currentFlight.flight) +
+        '&airline=' + encodeURIComponent(currentFlight.airline) +
+        '&destination=' + encodeURIComponent(currentFlight.dest) +
+        '&arrival=' + encodeURIComponent(currentFlight.arr) +
+        '&password=' + encodeURIComponent(pwd) +
+        '&bookedAt=' + encodeURIComponent(new Date().toISOString());
+
+      document.body.appendChild(script);
     };
 
     // ── RENDER FLIGHTS ─────────────────────────────────────────────
@@ -1143,6 +1148,7 @@
           '<span class="fids-iata">' + f.iata + '</span>' +
           '<span class="fids-dest">' + f.dest + '</span>' +
           '<span class="fids-transit">' + f.transit + '</span>' +
+          '<span class="fids-time">' + f.dep + '</span>' +
           '<span class="fids-time">' + f.arr + '</span>' +
           '<span class="fids-status fids-status--' + f.status + '">' + f.statusText + '</span>' +
           btnHtml +
