@@ -364,7 +364,7 @@
 
     .fids-row {
       display: grid;
-      grid-template-columns: 80px 160px 70px 1fr 120px 90px 90px 110px 150px;
+      grid-template-columns: 80px 160px 70px 1fr 120px 90px 110px 150px;
       padding: 14px 24px;
       border-bottom: 1px solid rgba(255,255,255,0.04);
       align-items: center;
@@ -781,7 +781,7 @@
       .info-strip { gap: 16px; }
 
       .fids-row {
-        grid-template-columns: 60px 70px 50px 1fr 0 70px 70px 80px 0;
+        grid-template-columns: 60px 70px 50px 1fr 0 70px 80px 0;
         padding: 10px 14px;
         font-size: 0.68rem;
       }
@@ -894,7 +894,6 @@
         <span>IATA</span>
         <span>Destination</span>
         <span>Transit</span>
-        <span>Departure</span>
         <span>Arrival</span>
         <span>Status</span>
         <span>Action</span>
@@ -947,7 +946,7 @@
       <button id="tmClose">✕</button>
       <h2>✈ Purchase Ticket</h2>
       <div id="tmFlightInfo"></div>
-      <p>Are you sure you want to book this ticket?<br><span style="font-size:0.82rem;color:rgba(255,255,255,0.45);font-style:italic;">(Please make sure you don't book the wrong ticket)</span></p>
+      <p>Are you sure you want to book this ticket?</p>
       <input id="tmPassword" type="password" placeholder="Enter your password to book" autocomplete="off" />
       <div id="tmFeedback"></div>
       <div id="tmActions">
@@ -1002,7 +1001,6 @@
       }
     })();
 
-    // Flight data — 24 flights, 3 pages of 8
     var flights = [
       // Page 1
       { flight: 'HX 368', airline: 'Hong Kong Airlines', iata: 'BKK', dest: 'Bangkok', transit: 'Direct', arr: '21:15', status: 'ontime', statusText: 'On Time' },
@@ -1038,7 +1036,7 @@
     var flightsPerPage = 8;
 
     // ── TICKET BOOKING CONFIG ──────────────────────────────────────
-    var GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbyI5i-MMboVLOqL8NWYpXK3zSu1LLO4025jLaIKdEqGjeLJB3p29i1uxursdNcebxP_uw/exec'; // <-- replace with your Apps Script URL
+    var GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxsTqwZcKas_PqKq-4BXzE67UIJwadBVFNXfP8D4Itiahi1uh60sIDLVkID_MvA3I8F/exec'; // <-- replace with your Apps Script URL
     var MAX_BOOKINGS_PER_FLIGHT = 3;
     var bookingCounts = {};
 
@@ -1050,7 +1048,7 @@
       currentFlight = flight;
       document.getElementById('tmFlightInfo').innerHTML =
         '<strong>' + flight.flight + '</strong>  ·  ' + flight.airline + '  →  ' + flight.dest +
-        '<br>Departure: ' + flight.dep + '  &nbsp;|&nbsp;  Arrival: ' + flight.arr;
+        '<br>Arrival: ' + flight.arr;
       document.getElementById('tmPassword').value = '';
       document.getElementById('tmFeedback').textContent = '';
       document.getElementById('tmFeedback').className = '';
@@ -1152,7 +1150,6 @@
           '<span class="fids-iata">' + f.iata + '</span>' +
           '<span class="fids-dest">' + f.dest + '</span>' +
           '<span class="fids-transit">' + f.transit + '</span>' +
-          '<span class="fids-time">' + f.dep + '</span>' +
           '<span class="fids-time">' + f.arr + '</span>' +
           '<span class="fids-status fids-status--' + f.status + '">' + f.statusText + '</span>' +
           btnHtml +
